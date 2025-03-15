@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tampa/Hillsborough Homeless Resource Finder</title>
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #f8f9fa;
+            --accent-color: #28a745;
+            --text-color: #333;
+            --font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--text-color);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        h2 {
+            font-size: 1.4rem;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .date-info {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .screen.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        .question {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .option-btn {
+            background-color: var(--secondary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1 0 calc(50% - 10px);
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .option-btn:hover, .option-btn:focus {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .letter-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .letter-btn {
+            background-color: var(--secondary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 6px;
+            padding: 10px 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .letter-btn:hover, .letter-btn:focus {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .result-card {
+            background-color: var(--secondary-color);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-agency {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .result-contact {
+            margin-bottom: 15px;
+        }
+        
+        .result-contact a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .call-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: block;
+            text-decoration: none;
+            text-align: center;
+            width: 100%;
+            max-width: 200px;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .nav-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .nav-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .notice {
+            font-style: italic;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .option-btn {
+                flex: 1 0 100%;
+            }
+            
+            .letter-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tampa/Hillsborough County</h1>
+        <h2>Homeless Resource Finder</h2>
+        <div class="date-info">
+            <p>Created: 9/20/2021 | Updated: 6/16/2023 | Expires: 9/30/2024</p>
+        </div>
+    </header>
+    
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+    
+    <!-- Housing Situation Screen -->
+    <div class="screen active" id="housing-screen">
+        <p class="question">Are you experiencing unsheltered homelessness?</p>
+        <p>Living in your car, in a park, in an abandoned building, on the streets, or in a place not meant for human habitation</p>
+        <div class="options">
+            <button class="option-btn" onclick="selectHousing('yes')">Yes</button>
+            <button class="option-btn" onclick="selectHousing('no')">No</button>
+        </div>
+    </div>
+    
+    <!-- Family Situation Screen -->
+    <div class="screen" id="family-screen">
+        <p class="question">Which best describes your situation?</p>
+        <div class="options">
+            <button class="option-btn" onclick="selectFamilyType('youth')">Youth (ages 16-24)</button>
+            <button class="option-btn" onclick="selectFamilyType('family')">Family with children</button>
+            <button class="option-btn" onclick="selectFamilyType('single')">Single adult (no minors)</button>
+            <button class="option-btn" onclick="selectFamilyType('veteran')">Veteran</button>
+        </div>
+    </div>
+    
+    <!-- Last Name Screen -->
+    <div class="screen" id="lastname-screen">
+        <p class="question">What is the first letter of your last name?</p>
+        <div class="letter-grid" id="letter-grid"></div>
+    </div>
+    
+    <!-- Results Screen -->
+    <div class="screen" id="results-screen">
+        <p class="question">Here's where to call for assistance:</p>
+        <div class="result-card" id="result-card">
+            <div class="result-agency" id="result-agency">Agency Name</div>
+            <div class="result-contact">
+                Phone: <a href="tel:" id="result-phone">Phone Number</a>
+            </div>
+            <div class="result-contact" id="result-email-container">
+                Email: <a href="mailto:" id="result-email">Email Address</a>
+            </div>
+            <a href="tel:" class="call-btn" id="call-button">Call Now</a>
+            <p class="notice">When you call, mention you were referred through the Coordinated Entry system.</p>
+        </div>
+        <button class="nav-btn" onclick="resetApp()">Start Over</button>
+    </div>
+    
+    <!-- Not Eligible Screen -->
+    <div class="screen" id="not-eligible-screen">
+        <p class="question">Information for Other Housing Needs</p>
+        <p>This tool is specifically for those experiencing unsheltered homelessness in Tampa/Hillsborough County.</p>
+        <p>If you're at risk of homelessness or need other housing assistance, please contact:</p>
+        <div class="result-card">
+            <div class="result-agency">Tampa Hillsborough Homeless Initiative (THHI)</div>
+            <p>For general information and resources</p>
+            <a href="https://www.thhi.org" target="_blank" class="call-btn">Visit Website</a>
+        </div>
+        <button class="nav-btn" onclick="resetApp()">Start Over</button>
+    </div>
+    
+    <script>
+        // Resource directory based on the provided document
+        const resourceDirectory = {
+            youth: {
+                "A-M": {
+                    agency: "Catholic Charities",
+                    phone: "(813) 631-4370 ext 5055 & 2212",
+                    phoneLink: "8136314370",
+                    email: "ce@ccdosp.org"
+                },
+                "N-Z": {
+                    agency: "Metropolitan Ministries",
+                    phone: "(813) 209-1240",
+                    phoneLink: "8132091240",
+                    email: "cespecialist@metromin.org"
+                }
+            },
+            family: {
+                "A-E": {
+                    agency: "Catholic Charities",
+                    phone: "(813) 631-4370 ext 5055 & 2212",
+                    phoneLink: "8136314370",
+                    email: "ce@ccdosp.org"
+                },
+                "F-K": {
+                    agency: "Dawning Family Services",
+                    phone: "(813) 245-9154",
+                    phoneLink: "8132459154",
+                    email: "fap@dawningfs.org"
+                },
+                "L-P": {
+                    agency: "Metropolitan Ministries",
+                    phone: "(813) 209-1240",
+                    phoneLink: "8132091240",
+                    email: "cespecialist@metromin.org"
+                },
+                "Q-U": {
+                    agency: "St. Vincent de Paul",
+                    phone: "(813) 999-8973",
+                    phoneLink: "8139998973",
+                    email: "tampaoutreach@svdp.care"
+                },
+                "V-Z": {
+                    agency: "Dawning Family Services",
+                    phone: "(813) 245-9154",
+                    phoneLink: "8132459154",
+                    email: "fap@dawningfs.org"
+                }
+            },
+            single: {
+                "A-G": {
+                    agency: "Catholic Charities",
+                    phone: "(813) 631-4370 ext 5055 & 2212",
+                    phoneLink: "8136314370",
+                    email: "ce@ccdosp.org"
+                },
+                "H-M": {
+                    agency: "Metropolitan Ministries",
+                    phone: "(813) 209-1240",
+                    phoneLink: "8132091240",
+                    email: "cespecialist@metromin.org"
+                },
+                "N-T": {
+                    agency: "St. Vincent de Paul",
+                    phone: "(813) 999-8973",
+                    phoneLink: "8139998973",
+                    email: "tampaoutreach@svdp.care"
+                },
+                "U-Z": {
+                    agency: "Metropolitan Ministries",
+                    phone: "(813) 209-1240",
+                    phoneLink: "8132091240",
+                    email: "cespecialist@metromin.org"
+                }
+            },
+            veteran: {
+                "A-Z": {
+                    agency: "St. Vincent de Paul",
+                    phone: "(813) 443-8296",
+                    phoneLink: "8134438296",
+                    email: null
+                }
+            }
+        };
+        
+        // Define letter ranges for each family type
+        const letterRanges = {
+            youth: ["A-M", "N-Z"],
+            family: ["A-E", "F-K", "L-P", "Q-U", "V-Z"],
+            single: ["A-G", "H-M", "N-T", "U-Z"],
+            veteran: ["A-Z"]
+        };
+        
+        // State variables
+        let currentScreen = "housing-screen";
+        let housingStatus = null;
+        let familyType = null;
+        let lastNameLetter = null;
+        
+        // Initialize letter grid
+        function initializeLetterGrid() {
+            const grid = document.getElementById('letter-grid');
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+            
+            letters.forEach(letter => {
+                const button = document.createElement('button');
+                button.className = 'letter-btn';
+                button.textContent = letter;
+                button.onclick = () => selectLetter(letter);
+                grid.appendChild(button);
+            });
+        }
+        
+        // Change screens
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            currentScreen = screenId;
+            
+            // Update progress bar
+            const progressMap = {
+                "housing-screen": 25,
+                "family-screen": 50,
+                "lastname-screen": 75,
+                "results-screen": 100,
+                "not-eligible-screen": 100
+            };
+            
+            document.getElementById('progress').style.width = `${progressMap[screenId]}%`;
+        }
+        
+        // Housing situation selection
+        function selectHousing(status) {
+            housingStatus = status;
+            
+            if (status === 'yes') {
+                showScreen('family-screen');
+            } else {
+                showScreen('not-eligible-screen');
+            }
+        }
+        
+        // Family type selection
+        function selectFamilyType(type) {
+            familyType = type;
+            
+            // If veteran, no need to ask for last name letter
+            if (type === 'veteran') {
+                findResource();
+                showScreen('results-screen');
+            } else {
+                showScreen('lastname-screen');
+            }
+        }
+        
+        // Last name letter selection
+        function selectLetter(letter) {
+            lastNameLetter = letter;
+            findResource();
+            showScreen('results-screen');
+        }
+        
+        // Find the appropriate resource
+        function findResource() {
+            let resource;
+            
+            if (familyType === 'veteran') {
+                resource = resourceDirectory.veteran["A-Z"];
+            } else {
+                // Determine which letter range the selected letter falls into
+                const ranges = letterRanges[familyType];
+                let letterRange = null;
+                
+                for (const range of ranges) {
+                    const [start, end] = range.split('-');
+                    if (lastNameLetter >= start && lastNameLetter <= end) {
+                        letterRange = range;
+                        break;
+                    }
+                }
+                
+                resource = resourceDirectory[familyType][letterRange];
+            }
+            
+            // Update the results screen
+            document.getElementById('result-agency').textContent = resource.agency;
+            document.getElementById('result-phone').textContent = resource.phone;
+            document.getElementById('result-phone').href = `tel:${resource.phoneLink}`;
+            document.getElementById('call-button').href = `tel:${resource.phoneLink}`;
+            
+            if (resource.email) {
+                document.getElementById('result-email').textContent = resource.email;
+                document.getElementById('result-email').href = `mailto:${resource.email}`;
+                document.getElementById('result-email-container').style.display = 'block';
+            } else {
+                document.getElementById('result-email-container').style.display = 'none';
+            }
+        }
+        
+        // Reset the app
+        function resetApp() {
+            housingStatus = null;
+            familyType = null;
+            lastNameLetter = null;
+            showScreen('housing-screen');
+        }
+        
+        // Initialize the app
+        window.onload = function() {
+            initializeLetterGrid();
+        };
+    </script>
+</body>
+</html>
