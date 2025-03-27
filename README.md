@@ -1,5 +1,4 @@
-# Tampa/Hillsborough County Homeless Resource Finder
-
+# Tampa/Hillsborough County Designated Access Points App
 ## Overview
 This repository contains a simple, accessible web application designed to help individuals experiencing homelessness in Tampa/Hillsborough County quickly find the appropriate dedicated access point based on their situation and last name.
 
