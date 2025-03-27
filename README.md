@@ -36,6 +36,8 @@ The application guides users through a simple process:
 3. Select the first letter of their last name
 4. View the appropriate contact information with a convenient "Call Now" button
 
+A working demo can be found at: https://wan03.github.io/thrf/
+
 ## Technology Stack
 - HTML5
 - CSS3
