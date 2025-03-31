@@ -17,6 +17,10 @@
             --text-color: #ce1141;
         }
         
+        .logo {
+            float: right;
+        }
+        
         body {
             font-family: var(--font-family);
             line-height: 1.6;
@@ -221,7 +225,7 @@
 </head>
 <body>
     <header>
-        <h1>Tampa/Hillsborough County</h1>
+        <h1>Tampa/Hillsborough County <img class="logo" src="https://static.wixstatic.com/media/b1c521_381fbb1cc0f2472ba1d8ad599613584d~mv2.png/v1/fill/w_196,h_170,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/THHI_NewLogo_Color_3_6.png" alt="Tampa Hillsborough Homeless Inititative" width="50" height="60"></h1>
         <h2>Designated Access Points</h2>
         <div class="date-info">
             <p>Created: 9/20/2021 | Updated: 3/27/2025 | Expires: 9/30/2026</p>
@@ -290,21 +294,16 @@
     </div>
     
     <script>
-        // Resource directory based on the provided document
+        // Resource directory updated 3.38.35
         const resourceDirectory = {
             youth: {
-                "A-M": {
-                    agency: "Catholic Charities",
-                    phone: "(813) 631-4370 ext 5055 & 2212",
-                    phoneLink: "8136314370",
-                    email: "ce@ccdosp.org"
+                "A-Z": {
+                    agency: "YHDP Designated Access Point",
+                    phone: "(813) 860-7743",
+                    phoneLink: "8138603173",
+                    email: "ceyouth@thhi.org"
                 },
-                "N-Z": {
-                    agency: "Metropolitan Ministries",
-                    phone: "(813) 209-1240",
-                    phoneLink: "8132091240",
-                    email: "cespecialist@metromin.org"
-                }
+                
             },
             family: {
                 "A-E": {
@@ -376,7 +375,7 @@
         
         // Define letter ranges for each family type
         const letterRanges = {
-            youth: ["A-M", "N-Z"],
+            youth: ["A-Z"],
             family: ["A-E", "F-K", "L-P", "Q-U", "V-Z"],
             single: ["A-G", "H-M", "N-T", "U-Z"],
             veteran: ["A-Z"]
